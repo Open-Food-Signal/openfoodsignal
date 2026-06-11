@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenFoodSignal — Olive oil availability</title>
+<meta name="description" content="An open traffic-light index for food availability, built from public market data. Current signal: olive oil (EU).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#EDEFE3;
+    --surface:#F7F8F0;
+    --ink:#20261A;
+    --ink-soft:#5A6150;
+    --line:#C9CDB8;
+    --gold:#A87D08;
+    --signal-green:#2E8C43;
+    --signal-amber:#D89B12;
+    --signal-red:#C8402B;
+    --lamp-off:#DDE0CD;
+    --lamp-rim:#B7BCA3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:'Public Sans',system-ui,sans-serif;
+    font-size:16px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-underline-offset:3px}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+
+  /* ---------- header ---------- */
+  header{border-bottom:1px solid var(--line)}
+  .head-row{display:flex;justify-content:space-between;align-items:baseline;padding:20px 0;gap:16px;flex-wrap:wrap}
+  .wordmark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:-0.01em}
+  .wordmark span{color:var(--gold)}
+  .head-meta{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--ink-soft)}
+
+  /* ---------- hero / instrument ---------- */
+  .hero{display:grid;grid-template-columns:200px 1fr;gap:56px;align-items:center;padding:64px 0 56px}
+  .lamp-housing{
+    background:var(--surface);border:1px solid var(--lamp-rim);border-radius:120px;
+    padding:26px 0;display:flex;flex-direction:column;align-items:center;gap:22px;
+    width:148px;margin:0 auto;
+    box-shadow:inset 0 2px 6px rgba(32,38,26,.06);
+  }
+  .lamp{
+    width:96px;height:96px;border-radius:50%;
+    background:var(--lamp-off);border:1px solid var(--lamp-rim);
+    transition:background .4s ease, box-shadow .4s ease;
+  }
+  .lamp.on-green{background:var(--signal-green);box-shadow:0 0 0 6px rgba(46,140,67,.14),0 0 44px rgba(46,140,67,.55);border-color:transparent}
+  .lamp.on-amber{background:var(--signal-amber);box-shadow:0 0 0 6px rgba(216,155,18,.16),0 0 44px rgba(216,155,18,.55);border-color:transparent}
+  .lamp.on-red{background:var(--signal-red);box-shadow:0 0 0 6px rgba(200,64,43,.15),0 0 44px rgba(200,64,43,.55);border-color:transparent}
+  @media (prefers-reduced-motion: no-preference){
+    .lamp.on-green,.lamp.on-amber,.lamp.on-red{animation:breathe 4s ease-in-out infinite}
+    @keyframes breathe{50%{filter:brightness(1.07)}}
+  }
+
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(2.1rem,4.6vw,3.4rem);line-height:1.04;letter-spacing:-0.02em;margin-bottom:22px}
+  .reading{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+  .index-value{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(3.4rem,7vw,5rem);line-height:1;letter-spacing:-0.03em}
+  .index-scale{font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);font-size:.95rem}
+  .status-word{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:1.25rem}
+  .explain{max-width:54ch;color:var(--ink-soft)}
+  .hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+  .chip{font-family:'IBM Plex Mono',monospace;font-size:.72rem;border:1px solid var(--line);border-radius:99px;padding:5px 12px;background:var(--surface);color:var(--ink-soft)}
+  .chip strong{color:var(--ink);font-weight:600}
+
+  /* ---------- pillars ---------- */
+  .section-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:14px;margin-bottom:22px}
+  .pillars{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding-bottom:56px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px 26px}
+  .card h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:1.05rem;margin-bottom:2px}
+  .card .sub{font-size:.85rem;color:var(--ink-soft);margin-bottom:18px}
+  .score-row{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+  .score{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:2rem}
+  .bar{height:8px;border-radius:99px;background:var(--lamp-off);overflow:hidden;margin-bottom:18px}
+  .bar i{display:block;height:100%;border-radius:99px;background:var(--gold);width:0;transition:width .8s ease}
+  dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:.85rem}
+  dt{color:var(--ink-soft)}
+  dd{font-family:'IBM Plex Mono',monospace;text-align:right}
+
+  /* ---------- history ---------- */
+  .history{padding-bottom:64px}
+  .chart-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px 26px}
+  .chart-card h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:1.05rem}
+  .chart-card .sub{font-size:.85rem;color:var(--ink-soft);margin-bottom:14px}
+  #spark{width:100%;height:auto;display:block}
+
+  /* ---------- provenance strip ---------- */
+  footer{border-top:1px solid var(--line);background:var(--surface)}
+  .prov{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:22px 0;font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--ink-soft)}
+  .prov a{color:var(--ink)}
+
+  /* ---------- states ---------- */
+  .notice{margin:48px auto;max-width:62ch;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--signal-amber);border-radius:10px;padding:20px 22px;font-size:.92rem}
+  .notice code{font-family:'IBM Plex Mono',monospace;font-size:.85em}
+  .hidden{display:none}
+
+  @media (max-width:720px){
+    .hero{grid-template-columns:1fr;gap:36px;padding:44px 0 40px;text-align:center}
+    .explain{margin:0 auto}
+    .hero-meta{justify-content:center}
+    .pillars{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head-row">
+    <div class="wordmark">Open<span>Food</span>Signal</div>
+    <div class="head-meta">food-availability-signal · v0.1 · ODbL</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div id="loading" class="notice" style="border-left-color:var(--line)">Loading the latest signal …</div>
+
+  <div id="error" class="notice hidden">
+    <strong>Couldn't load the signal data.</strong><br>
+    This page reads <code>data/index_latest.json</code> next to it. Two common causes:
+    the pipeline hasn't been run yet (run <code>pillar_b.py</code>, then <code>pillar_a.py</code>),
+    or the page was opened as a local file — browsers block data loading from
+    <code>file://</code>. Serve it locally with
+    <code>python3 -m http.server</code> and open <code>http://localhost:8000</code>,
+    or publish via GitHub Pages.
+  </div>
+
+  <section id="hero" class="hero hidden" aria-live="polite">
+    <div class="lamp-housing" id="housing" role="img" aria-label="Traffic light">
+      <div class="lamp" id="lamp-red"></div>
+      <div class="lamp" id="lamp-amber"></div>
+      <div class="lamp" id="lamp-green"></div>
+    </div>
+    <div>
+      <p class="eyebrow" id="eyebrow">Olive oil · EU</p>
+      <h1>How available is olive oil right now?</h1>
+      <div class="reading">
+        <span class="index-value" id="index-value">–</span>
+        <span class="index-scale">/ 100</span>
+        <span class="status-word" id="status-word"></span>
+      </div>
+      <p class="explain" id="explain"></p>
+      <div class="hero-meta">
+        <span class="chip">updated <strong id="updated">–</strong></span>
+        <span class="chip">data quality <strong id="quality">–</strong></span>
+        <span class="chip"><a id="json-link" href="data/index_latest.json">raw JSON</a></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="pillars-section" class="hidden">
+    <p class="section-label">What the signal is made of</p>
+    <div class="pillars">
+      <div class="card">
+        <h2>Pillar A — Stock coverage</h2>
+        <p class="sub">How full are the warehouses, relative to the size of the market?</p>
+        <div class="score-row"><span class="score" id="a-score">–</span><span class="index-scale">/ 100</span></div>
+        <div class="bar"><i id="a-bar"></i></div>
+        <dl>
+          <dt>Crop year</dt><dd id="a-year">–</dd>
+          <dt>Ending stocks</dt><dd id="a-stocks">–</dd>
+          <dt>Coverage ratio</dt><dd id="a-ratio">–</dd>
+          <dt>z-score</dt><dd id="a-z">–</dd>
+        </dl>
+      </div>
+      <div class="card">
+        <h2>Pillar B — Price signal</h2>
+        <p class="sub">How far are real producer prices from their 5-year norm?</p>
+        <div class="score-row"><span class="score" id="b-score">–</span><span class="index-scale">/ 100</span></div>
+        <div class="bar"><i id="b-bar"></i></div>
+        <dl>
+          <dt>Week ending</dt><dd id="b-week">–</dd>
+          <dt>Real price</dt><dd id="b-price">–</dd>
+          <dt>Markets</dt><dd id="b-markets">–</dd>
+          <dt>z-score</dt><dd id="b-z">–</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="history" class="history hidden">
+    <p class="section-label">The price pillar since 2010</p>
+    <div class="chart-card">
+      <h2>Pillar B score, weekly</h2>
+      <p class="sub">0 = scarce (real prices far above norm) · 100 = abundant. The deep trough marks the 2022–2024 drought crisis.</p>
+      <svg id="spark" viewBox="0 0 1000 240" preserveAspectRatio="none" role="img" aria-label="Weekly Pillar B score since 2010"></svg>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap prov">
+    <span>sources: EU Agri-food Data Portal · Eurostat HICP</span>
+    <span><a href="METHODOLOGY.md">methodology</a> · <a href="https://github.com/openfoodsignal">github</a> · data ODbL 1.0 / code AGPL 3.0</span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+
+/* ---------- tiny CSV parser (handles quoted fields with commas) ---------- */
+function parseCSV(text){
+  const rows=[];let row=[],field="",inQuotes=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(inQuotes){
+      if(c==='"'){ if(text[i+1]==='"'){field+='"';i++;} else inQuotes=false; }
+      else field+=c;
+    }else{
+      if(c==='"') inQuotes=true;
+      else if(c===','){row.push(field);field="";}
+      else if(c==='\n'){row.push(field);rows.push(row);row=[];field="";}
+      else if(c!=='\r') field+=c;
+    }
+  }
+  if(field.length||row.length){row.push(field);rows.push(row);}
+  return rows;
+}
+
+function show(id){document.getElementById(id).classList.remove("hidden");}
+function hide(id){document.getElementById(id).classList.add("hidden");}
+function set(id,text){document.getElementById(id).textContent=text;}
+
+const STATUS={green:"Good availability",yellow:"Tightening",red:"Scarce"};
+const LAMP={green:"lamp-green",yellow:"lamp-amber",red:"lamp-red"};
+const LAMP_CLASS={green:"on-green",yellow:"on-amber",red:"on-red"};
+
+function explain(d){
+  const a=d.pillars&&d.pillars.stocks,b=d.pillars&&d.pillars.price;
+  const parts=[];
+  if(a) parts.push(`stocks score ${a.score} (coverage ratio ${a.coverage_ratio}, crop year ${a.crop_year})`);
+  if(b) parts.push(`price score ${b.score} (real producer price ${b.p_real_eur_per_100kg} €/100 kg)`);
+  return `The index combines ${parts.join(" and ")}. Every number is recomputable from the open methodology.`;
+}
+
+async function loadIndex(){
+  const resp=await fetch("data/index_latest.json",{cache:"no-store"});
+  if(!resp.ok) throw new Error("HTTP "+resp.status);
+  const d=await resp.json();
+
+  hide("loading");show("hero");show("pillars-section");
+
+  set("index-value",d.availability_index);
+  set("status-word",STATUS[d.traffic_light]||d.traffic_light);
+  set("updated",d.timestamp||"–");
+  set("quality",d.data_quality||"–");
+  set("explain",explain(d));
+  set("eyebrow",`${(d.commodity||"").replace("-"," ")} · ${d.scope||""}`);
+  const lamp=document.getElementById(LAMP[d.traffic_light]);
+  if(lamp) lamp.classList.add(LAMP_CLASS[d.traffic_light]);
+  document.getElementById("housing").setAttribute("aria-label",
+    `Traffic light showing ${d.traffic_light}: index ${d.availability_index} of 100`);
+
+  const a=d.pillars&&d.pillars.stocks;
+  if(a){
+    set("a-score",a.score);
+    document.getElementById("a-bar").style.width=a.score+"%";
+    set("a-year",a.crop_year||"–");
+    set("a-stocks",(a.ending_stocks_1000t!=null?a.ending_stocks_1000t+" kt":"–"));
+    set("a-ratio",a.coverage_ratio!=null?a.coverage_ratio:"–");
+    set("a-z",a.z!=null?a.z:"–");
+  }
+  const b=d.pillars&&d.pillars.price;
+  if(b){
+    set("b-score",b.score);
+    document.getElementById("b-bar").style.width=b.score+"%";
+    set("b-week",b.week_end||"–");
+    set("b-price",(b.p_real_eur_per_100kg!=null?b.p_real_eur_per_100kg+" €/100 kg":"–"));
+    set("b-markets",(b.markets_used||[]).join(", ")||"–");
+    set("b-z",b.z!=null?b.z:"–");
+  }
+}
+
+async function loadHistory(){
+  const resp=await fetch("data/pillar_b_series.csv",{cache:"no-store"});
+  if(!resp.ok) return;
+  const rows=parseCSV(await resp.text());
+  if(rows.length<3) return;
+  const header=rows[0];
+  const ti=header.indexOf("week_end"), si=header.indexOf("score_b");
+  if(ti<0||si<0) return;
+  const pts=[];
+  for(let i=1;i<rows.length;i++){
+    const v=parseFloat(rows[i][si]);
+    if(!isNaN(v)) pts.push({t:rows[i][ti],v:v});
+  }
+  if(pts.length<10) return;
+
+  const W=1000,H=240,P=10;
+  const x=i=>P+(W-2*P)*i/(pts.length-1);
+  const y=v=>H-P-(H-2*P)*v/100;
+  let path=`M ${x(0)} ${y(pts[0].v)}`;
+  for(let i=1;i<pts.length;i++) path+=` L ${x(i)} ${y(pts[i].v)}`;
+
+  const last=pts[pts.length-1];
+  const svg=document.getElementById("spark");
+  svg.innerHTML=
+    `<line x1="${P}" y1="${y(67)}" x2="${W-P}" y2="${y(67)}" stroke="#C9CDB8" stroke-dasharray="4 5"/>`+
+    `<line x1="${P}" y1="${y(33)}" x2="${W-P}" y2="${y(33)}" stroke="#C9CDB8" stroke-dasharray="4 5"/>`+
+    `<path d="${path}" fill="none" stroke="#A87D08" stroke-width="2.5" stroke-linejoin="round"/>`+
+    `<circle cx="${x(pts.length-1)}" cy="${y(last.v)}" r="5" fill="#20261A"/>`+
+    `<text x="${P+4}" y="${y(67)-6}" font-family="IBM Plex Mono" font-size="13" fill="#5A6150">green ≥ 67</text>`+
+    `<text x="${P+4}" y="${y(33)-6}" font-family="IBM Plex Mono" font-size="13" fill="#5A6150">red ≤ 33</text>`;
+  show("history");
+}
+
+loadIndex().catch(err=>{
+  console.error(err);
+  hide("loading");show("error");
+});
+loadHistory().catch(err=>console.warn("history skipped:",err));
+</script>
+</body>
+</html>
