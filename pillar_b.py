@@ -250,7 +250,8 @@ def main() -> None:
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     csv_path = OUT_DIR / "pillar_b_series.csv"
-    df.to_csv(csv_path, index_label="week_end")
+    # Limit floats to 4 decimals so the CSV stays readable in Excel & Co.
+    df.to_csv(csv_path, index_label="week_end", float_format="%.4f")
 
     last = df.dropna(subset=["score_b"]).iloc[-1]
     latest = {
