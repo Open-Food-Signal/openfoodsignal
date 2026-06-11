@@ -1,0 +1,21 @@
+{
+  "signal_version": "0.1",
+  "methodology_version": "0.1.0",
+  "commodity": "olive-oil",
+  "scope": "EU",
+  "pillar": "price",
+  "week_end": "2026-06-07",
+  "score": 69,
+  "z": -0.77,
+  "p_real_eur_per_100kg": 360.61,
+  "p_nominal_eur_per_100kg": 447.27,
+  "markets_used": [
+    "jaen",
+    "bari"
+  ],
+  "sources": [
+    "eu-agrifood-portal",
+    "eurostat-hicp"
+  ],
+  "license": "ODbL-1.0"
+}
