@@ -88,6 +88,19 @@
   dt{color:var(--ink-soft)}
   dd{font-family:'IBM Plex Mono',monospace;text-align:right}
 
+  /* ---------- outlook (pillar C, not in headline index) ---------- */
+  #outlook{padding-bottom:56px}
+  .outlook-card{border-style:dashed}
+  .outlook-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+  .outlook-head h2 span{color:var(--ink-soft);font-weight:400}
+  .regions{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0 6px}
+  .region{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--ground)}
+  .region h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:.9rem;text-transform:capitalize;margin-bottom:6px;display:flex;justify-content:space-between;align-items:baseline}
+  .region h3 b{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:1.05rem}
+  .region p{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--ink-soft);line-height:1.7}
+  .outlook-note{font-size:.8rem;color:var(--ink-soft);margin-top:8px}
+  @media (max-width:720px){.regions{grid-template-columns:1fr}}
+
   /* ---------- history ---------- */
   .history{padding-bottom:64px}
   .chart-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px 26px}
@@ -189,6 +202,21 @@
     </div>
   </section>
 
+  <section id="outlook" class="hidden">
+    <p class="section-label">Looking ahead — not yet part of the index</p>
+    <div class="card outlook-card">
+      <div class="outlook-head">
+        <div>
+          <h2>Pillar C — Harvest outlook <span id="o-year"></span></h2>
+          <p class="sub">Weather during the growing and flowering season in the three main producing regions, measured against each region's own 10-year norm.</p>
+        </div>
+        <div class="score-row"><span class="score" id="o-score">–</span><span class="index-scale">/ 100</span></div>
+      </div>
+      <div class="regions" id="o-regions"></div>
+      <p class="outlook-note" id="o-note"></p>
+    </div>
+  </section>
+
   <section id="history" class="history hidden">
     <p class="section-label">The price pillar since 2010</p>
     <div class="chart-card">
@@ -202,7 +230,7 @@
 
 <footer>
   <div class="wrap prov">
-    <span>sources: EU Agri-food Data Portal · Eurostat HICP</span>
+    <span>sources: EU Agri-food Data Portal · Eurostat HICP · Open-Meteo (ERA5)</span>
     <span><a href="METHODOLOGY.md">methodology</a> · <a href="https://github.com/openfoodsignal">github</a> · data ODbL 1.0 / code AGPL 3.0</span>
   </div>
 </footer>
@@ -316,11 +344,35 @@ async function loadHistory(){
   show("history");
 }
 
+async function loadOutlook(){
+  const resp=await fetch("data/pillar_c_latest.json",{cache:"no-store"});
+  if(!resp.ok) return;
+  const d=await resp.json();
+  set("o-year",d.outlook_crop_year||"");
+  set("o-score",d.score!=null?d.score:"–");
+  const wrap=document.getElementById("o-regions");
+  wrap.innerHTML="";
+  for(const [name,r] of Object.entries(d.regions||{})){
+    const el=document.createElement("div");
+    el.className="region";
+    el.innerHTML=
+      `<h3>${name} <b>${r.score}</b></h3>`+
+      `<p>water ${Math.round(r.water_mm)} mm<br>bloom heat days ${r.bloom_heat_days}<br>weight ${Math.round(r.weight*100)} %</p>`;
+    wrap.appendChild(el);
+  }
+  const prelim=d.preliminary
+    ? "Preliminary — the flowering window is still in progress; the score settles by mid-June. "
+    : "";
+  set("o-note",prelim+(d.note||"")+" Weather data: Open-Meteo (ERA5/Copernicus), CC BY 4.0. As of "+(d.data_as_of||"–")+".");
+  show("outlook");
+}
+
 loadIndex().catch(err=>{
   console.error(err);
   hide("loading");show("error");
 });
 loadHistory().catch(err=>console.warn("history skipped:",err));
+loadOutlook().catch(err=>console.warn("outlook skipped:",err));
 </script>
 </body>
 </html>
