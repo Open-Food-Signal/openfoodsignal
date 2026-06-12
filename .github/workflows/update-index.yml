@@ -37,6 +37,9 @@ jobs:
       - name: Run Pillar B (price signal)
         run: python pillar_b.py
 
+      - name: Run Pillar C lite (harvest outlook)
+        run: python pillar_c.py
+
       - name: Run Pillar A (stock coverage) and combine index
         run: python pillar_a.py
 
