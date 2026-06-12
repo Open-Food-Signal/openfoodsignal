@@ -1,0 +1,53 @@
+# OpenFoodSignal — weekly index update
+#
+# Runs every Monday morning (and on demand via the "Run workflow" button),
+# executes both pillar pipelines and commits refreshed data files.
+# GitHub Pages (deploy from branch) republishes the dashboard automatically
+# on every push to main — no extra step needed.
+
+name: Update index
+
+on:
+  schedule:
+    # Mondays 05:30 UTC (= 06:30/07:30 German time, before most people look).
+    # Note: GitHub may delay scheduled runs by a few minutes under load.
+    - cron: "30 5 * * 1"
+  workflow_dispatch: {}   # manual trigger via the Actions tab
+
+permissions:
+  contents: write         # allow the workflow to commit & push data updates
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests pandas
+
+      - name: Run Pillar B (price signal)
+        run: python pillar_b.py
+
+      - name: Run Pillar A (stock coverage) and combine index
+        run: python pillar_a.py
+
+      - name: Commit and push updated data
+        run: |
+          git config user.name "openfoodsignal-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No data changes this week — nothing to commit."
+          else
+            git commit -m "Weekly index update ($(date -u +%F))"
+            git push
+          fi
