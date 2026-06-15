@@ -2,30 +2,30 @@
   "pillar": "harvest_outlook",
   "stage": "lite (weather only, no vegetation indices yet)",
   "outlook_crop_year": "2026/27",
-  "score": 55,
-  "preliminary": true,
-  "window_coverage_min": 0.935,
+  "score": 57,
+  "preliminary": false,
+  "window_coverage_min": 1.0,
   "regions": {
     "andalusia": {
-      "score": 52,
-      "water_mm": 593.5,
-      "bloom_heat_days": 9,
+      "score": 56,
+      "water_mm": 594.7,
+      "bloom_heat_days": 10,
       "weight": 0.62
     },
     "apulia": {
-      "score": 64,
-      "water_mm": 621.4,
+      "score": 62,
+      "water_mm": 621.5,
       "bloom_heat_days": 0,
       "weight": 0.2
     },
     "crete": {
       "score": 54,
-      "water_mm": 975.8,
+      "water_mm": 981.6,
       "bloom_heat_days": 0,
       "weight": 0.18
     }
   },
-  "data_as_of": "2026-06-12",
+  "data_as_of": "2026-06-15",
   "note": "Not part of the headline index yet — pending backtest and methodology v0.2.",
   "attribution": "Weather data by Open-Meteo.com (ERA5/ERA5-Land, Copernicus), CC BY 4.0"
 }
