@@ -1,0 +1,13 @@
+{
+  "pillar": "stocks",
+  "crop_year": "2025/26",
+  "score": 49,
+  "z": -0.04,
+  "coverage_ratio": 0.226,
+  "ending_stocks_1000t": 421.6,
+  "states_reporting": 4,
+  "is_estimated": true,
+  "data_age_days": 0,
+  "data_quality": "ok",
+  "note": "v0.1 coverage proxy: stocks / 5y mean production (true stocks-to-use pending IOC consumption data)"
+}

@@ -1,0 +1,52 @@
+{
+  "signal_version": "0.1",
+  "methodology_version": "0.1.0",
+  "commodity": "olive-oil",
+  "scope": "EU",
+  "timestamp": "2026-06-16",
+  "availability_index": 57,
+  "traffic_light": "yellow",
+  "data_quality": "ok",
+  "pillars": {
+    "stocks": {
+      "pillar": "stocks",
+      "crop_year": "2025/26",
+      "score": 49,
+      "z": -0.04,
+      "coverage_ratio": 0.226,
+      "ending_stocks_1000t": 421.6,
+      "states_reporting": 4,
+      "is_estimated": true,
+      "data_age_days": 0,
+      "data_quality": "ok",
+      "note": "v0.1 coverage proxy: stocks / 5y mean production (true stocks-to-use pending IOC consumption data)"
+    },
+    "price": {
+      "signal_version": "0.1",
+      "methodology_version": "0.1.0",
+      "commodity": "olive-oil",
+      "scope": "EU",
+      "pillar": "price",
+      "week_end": "2026-06-07",
+      "score": 69,
+      "z": -0.78,
+      "p_real_eur_per_100kg": 359.0,
+      "p_nominal_eur_per_100kg": 428.62,
+      "markets_used": [
+        "jaen",
+        "bari",
+        "chania"
+      ],
+      "sources": [
+        "eu-agrifood-portal",
+        "eurostat-hicp"
+      ],
+      "license": "ODbL-1.0"
+    }
+  },
+  "sources": [
+    "eu-agrifood-portal",
+    "eurostat-hicp"
+  ],
+  "license": "ODbL-1.0"
+}
