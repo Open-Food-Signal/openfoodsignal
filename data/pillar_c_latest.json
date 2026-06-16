@@ -14,7 +14,7 @@
     },
     "apulia": {
       "score": 62,
-      "water_mm": 621.5,
+      "water_mm": 621.4,
       "bloom_heat_days": 0,
       "weight": 0.2
     },
@@ -25,7 +25,7 @@
       "weight": 0.18
     }
   },
-  "data_as_of": "2026-06-15",
+  "data_as_of": "2026-06-16",
   "note": "Not part of the headline index yet — pending backtest and methodology v0.2.",
   "attribution": "Weather data by Open-Meteo.com (ERA5/ERA5-Land, Copernicus), CC BY 4.0"
 }
