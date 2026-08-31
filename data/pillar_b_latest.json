@@ -4,14 +4,13 @@
   "commodity": "olive-oil",
   "scope": "EU",
   "pillar": "price",
-  "week_end": "2026-08-16",
+  "week_end": "2026-08-23",
   "score": 80,
-  "z": -1.19,
-  "p_real_eur_per_100kg": 302.39,
-  "p_nominal_eur_per_100kg": 371.5,
+  "z": -1.2,
+  "p_real_eur_per_100kg": 300.64,
+  "p_nominal_eur_per_100kg": 350.62,
   "markets_used": [
     "jaen",
-    "bari",
     "chania"
   ],
   "sources": [
