@@ -7,7 +7,7 @@
   "ending_stocks_1000t": 434.6,
   "states_reporting": 4,
   "is_estimated": true,
-  "data_age_days": 5,
+  "data_age_days": 12,
   "data_quality": "ok",
   "note": "v0.1 coverage proxy: stocks / 5y mean production (true stocks-to-use pending IOC consumption data)"
 }
